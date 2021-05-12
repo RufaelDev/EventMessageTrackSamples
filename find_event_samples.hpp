@@ -1,11 +1,11 @@
 /*
-    C++ Function to caluculate sample boundaries and content 
-	of event message track ISO/IEC 23001-18 clause 9.2
+        C++ Function to calculate sample boundaries and content 
+	of the event message track ISO/IEC 23001-18 based on clause 9.2
 	
 	Input: a list of dash event messages, segment start and end times 
-	Output: a list of event message track samples with event message instance 
+	Output: a list of event message track samples with event message instance boxes (emib) 
 	
-    All Rights Reserved CodeShop B.V. 2021 - 
+        All Rights Reserved CodeShop B.V. 2021 - 
 */
 
 #ifndef find_event_samples_HPP
@@ -29,9 +29,9 @@ namespace event_track {
 		uint64_t		presentation_time;
 		uint32_t		event_duration;
 		uint32_t		id;
-		std::string 	scheme_id_uri;
+		std::string 	        scheme_id_uri;
 		std::string		value;
-		std::vector<uint8_t>   message_data;
+		std::vector<uint8_t>    message_data;
 	};
     
 	//! struct to store a EventMessageInstanceBox 
@@ -40,7 +40,7 @@ namespace event_track {
 		int64_t			presentation_time_delta;
 		uint32_t		event_duration;
 		uint32_t		id;
-		std::string 	scheme_id_uri;
+		std::string 	        scheme_id_uri;
 		std::string		value;
 		std::vector<uint8_t>	message_data;
 
@@ -63,7 +63,7 @@ namespace event_track {
 	};
 
 
-	//! algorithm to find all sample boundaries between segment_start and segment_end
+	//! algorithm to find all sample boundaries between segment_start and segment_end (0=infinite)
 	uint32_t find_sample_boundaries(
 		const std::vector<DASHEventMessageBoxv1> &emsgs_in,
 		std::vector<uint64_t> &sample_boundaries,
@@ -112,7 +112,7 @@ namespace event_track {
 		return (uint32_t)sample_boundaries.size();
 	};
 
-	//! algorithm to find all event message track samples between segment_start and segment_end
+	//! algorithm to find all event message track samples between segment_start and segment_end (0=infinite)
 	uint32_t find_event_samples(
 		const std::vector<DASHEventMessageBoxv1> &emsgs_in,
 		std::vector<EventSample> &samples_out,
@@ -138,7 +138,7 @@ namespace event_track {
 				if (emsgs_in[k].event_duration == 0)
 					pt_du += 1;
 
-				// active 
+				// event is active during sample duration 
 				if (pt < sample_boundaries[i + 1] && pt_du > sample_boundaries[i])
 				{
 					s.instance_boxes.push_back(EventMessageInstanceBox(emsgs_in[k], s.sample_presentation_time));
@@ -167,7 +167,7 @@ namespace event_track {
 		if(!set_duration_to_zero)
 		    e.event_duration = distD(rng);
 		else
-			e.event_duration = 0;
+		    e.event_duration = 0;
 
 		e.presentation_time = distP(rng);
 		e.scheme_id_uri = "random-1-100";
