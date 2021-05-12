@@ -13,11 +13,11 @@ the set of active events changes.
 
 Only the conceptial conversion from DASHEvents to samples is covered, 
 this code does not write any MP4, DASH, ISO-BMFF 
-compliant files. 
+compliant output. 
 
 Libraries or code writing such compliant content may include the provided 
 function to detect sample boundaries and contents and implement
-the conversion.
+the conversion required to implement the Event Message Track Format.
 
 The code is available under MIT license.
 
