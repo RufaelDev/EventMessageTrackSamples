@@ -2,6 +2,8 @@
 
 ISO/IEC 23001-18 defines the Event Message Track format.
 
+This format can be used the carry DASH Event Message in ISO-BMFF tracks, both progressive and segmented.
+
 This repository contains sample code for converting a list of DASH Event Messages based on ISO/IEC 23009-1 to 
 Event Message Track Samples. 
 
@@ -24,7 +26,8 @@ Includes a function for converting a list of DASH Event Messages to
 Event Message Track formatting. Only detects sample boundaries and contents,
 the function does not write any compliant output. The function takes 
 segment start and end, allowing it to be used for generation of Event 
-Message Track segments.
+Message Track segments, i.e. detecting all samples and content between 
+segment start and segment end.
 
 ## generate_example.cpp
 Small program to create examples of Event message track samples formatting. 
