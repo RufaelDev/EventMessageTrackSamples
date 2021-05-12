@@ -12,10 +12,10 @@ is implemented. This triggers a sample boundary at each time
 the set of active events changes.
 
 Only the conceptial conversion from DASHEvents to samples is covered, 
-this code does not write any MP4, DASH, ISOBM-FF 
+this code does not write any MP4, DASH, ISO-BMFF 
 compliant files. 
 
-Libraries or code writing such files may include the provided 
+Libraries or code writing such compliant content may include the provided 
 function to detect sample boundaries and contents and implement
 the conversion.
 
