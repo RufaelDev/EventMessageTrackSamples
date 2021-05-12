@@ -30,7 +30,7 @@ Message Track segments, i.e. detecting all samples and content between
 segment start and segment end.
 
 ## generate_example.cpp
-Small program to create examples of Event message track samples formatting. 
+Small program to create examples of Event message track sample formatting. 
 
 It prints random events to the std::out. 
 Subsequently it prints the Event message track samples formatting.
