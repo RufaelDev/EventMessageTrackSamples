@@ -11,7 +11,7 @@ The algorithm for conversion from clause 9.2 of ISO/IEC 23001-18
 is implemented. This triggers a sample boundary at each time 
 the set of active events changes.
 
-Only the conceptial conversion from DASHEvents to samples is covered, 
+Only the conceptual conversion from DASHEvents to samples is covered, 
 this code does not write any MP4, DASH, ISO-BMFF 
 compliant output. 
 
@@ -23,7 +23,7 @@ The code is available under MIT license.
 
 ## find_event_samples.hpp 
 Includes a function for converting a list of DASH Event Messages to 
-Event Message Track formatting. Only detects sample boundaries and contents,
+Event Message Track samples output. Only detects sample boundaries and contents,
 the function does not write any compliant output. The function takes 
 segment start and end, allowing it to be used for generation of Event 
 Message Track segments, i.e. detecting all samples and content between 
