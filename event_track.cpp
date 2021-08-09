@@ -745,3 +745,130 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 		return 0;
 	}
 }
+
+// parse an fmp4 file for media ingest
+int event_track::ingest_event_stream::print_samples_from_file(std::istream &infile, bool init_only)
+{
+	try
+	{
+		if (infile)
+		{
+			std::vector<box> ingest_boxes;
+
+			while (infile.good()) // read box by box in a vector
+			{
+				box b = {};
+
+				if (b.read(infile))
+					ingest_boxes.push_back(b);
+				else  // break when we have boxes of size zero
+					break;
+
+				if (b.box_type_.compare("mfra") == 0)
+					break;
+			}
+
+			// organize the boxes in init fragments and media fragments 
+			for (auto it = ingest_boxes.begin(); it != ingest_boxes.end(); ++it)
+			{
+				if (it->box_type_.compare("ftyp") == 0)
+				{
+					//cout << "|ftyp|";
+					init_fragment_.ftyp_box_ = *it;
+				}
+				if (it->box_type_.compare("moov") == 0)
+				{
+					//cout << "|moov|";
+					init_fragment_.moov_box_ = *it;
+
+					if (init_only)
+						return 0;
+				}
+
+				if (it->box_type_.compare("moof") == 0) // in case of moof box we push both the moof and following mdat
+				{
+					media_fragment m = {};
+					m.moof_box_ = *it;
+					m.parse_moof();
+					bool mdat_found = false;
+					std::cout << "======  found movie fragment with base media decode time ===== " << m.tfdt_.base_media_decode_time_ << std::endl;
+					it++;
+
+					// only support default base is moof and mdat immediately following (CMAF)
+					if (m.tfhd_.default_base_is_moof_ && (m.trun_.data_offset_ - 8) == m.moof_box_.size_) {
+
+						if (it->box_type_.compare("mdat") == 0)
+						{
+							m.mdat_box_ = *it;
+							uint64_t pres_time = m.tfdt_.base_media_decode_time_;
+							uint32_t data_offset = 0;
+
+							if (m.trun_.sample_duration_present_ && m.trun_.sample_size_present_)
+							{
+								for (int i = 0; i < m.trun_.m_sentry.size(); i++)
+								{
+									uint32_t ss = m.trun_.m_sentry[i].sample_size_;
+									std::vector<uint8_t> sample_data(ss);
+									std::cout << "======  found sample in movie fragment, presentation time " << pres_time <<
+										" duration " \
+										<< m.trun_.m_sentry[i].sample_duration_ << "sample size" << m.trun_.m_sentry[i].sample_size_ << "=====" << std::endl;
+									for (unsigned int j = 0; j < ss; j++)
+										sample_data[j] = m.mdat_box_.box_data_[8 + data_offset + j];
+
+									//parse_event_sample(sample_data,uint64_t presentation_time, )
+									unsigned int bts = 0;
+									if (ss > 8)
+									{
+										while (bts < sample_data.size()) {
+											EventMessageInstanceBox im_box;
+											bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
+											im_box.print();
+											// auto e = im_box.to_emsg_v1(pres_time);
+											// events_list_[im_box.scheme_id_uri_][im_box.id_] = e;
+										}
+									}
+									else
+									{
+										std::cout << "empty sample (embe/emeb): " << std::endl;
+									}
+
+									data_offset += ss;
+									pres_time += m.trun_.m_sentry[i].sample_duration_;
+								}
+							}
+						}
+					}
+					else
+					{
+						std::cout << "error only CMAF based metadata tracks supported with default_base_is_moof and mdat immediately following" << std::endl;
+					}
+				}
+				if (it->box_type_.compare("mfra") == 0)
+				{
+					this->mfra_box_ = *it;
+				}
+				if (it->box_type_.compare("sidx") == 0)
+				{
+					this->sidx_box_ = *it;
+					std::cout << "|sidx|";
+				}
+				if (it->box_type_.compare("meta") == 0)
+				{
+					this->meta_box_ = *it;
+					std::cout << "|meta|";
+				}
+			}
+		}
+		std::cout << std::endl;
+		std::cout << "***  finished reading fmp4 fragments  ***" << std::endl;
+		std::cout << "***  read  fmp4 init fragment         ***" << std::endl;
+		std::cout << "***  read " << media_fragment_.size() << " fmp4 media fragments ***" << std::endl;
+
+		return 0;
+	}
+	catch (std::exception e)
+	{
+		std::cout << e.what() << std::endl;
+		return 0;
+	}
+}
