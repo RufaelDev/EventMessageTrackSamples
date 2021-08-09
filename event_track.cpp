@@ -791,7 +791,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 					m.moof_box_ = *it;
 					m.parse_moof();
 					bool mdat_found = false;
-					std::cout << "======  found movie fragment with base media decode time ===== " << m.tfdt_.base_media_decode_time_ << std::endl << std::endl;
+					std::cout << "==  found movie fragment with base media decode time: " << m.tfdt_.base_media_decode_time_ << std::endl;
 					it++;
 
 					// only support default base is moof and mdat immediately following (CMAF)
@@ -809,9 +809,9 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 								{
 									uint32_t ss = m.trun_.m_sentry[i].sample_size_;
 									std::vector<uint8_t> sample_data(ss);
-									std::cout << "======  found sample in movie fragment, presentation time " << pres_time <<
-										" duration " \
-										<< m.trun_.m_sentry[i].sample_duration_ << " sample size " << m.trun_.m_sentry[i].sample_size_ << " ===== " << std::endl;
+									std::cout << "== found sample, presentation time = " << pres_time <<
+										" duration = " \
+										<< m.trun_.m_sentry[i].sample_duration_ << " sample size = " << m.trun_.m_sentry[i].sample_size_ << " == " << std::endl;
 									for (unsigned int j = 0; j < ss; j++)
 										sample_data[j] = m.mdat_box_.box_data_[8 + data_offset + j];
 
