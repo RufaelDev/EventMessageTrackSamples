@@ -36,3 +36,18 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ./unittest
       
+    - name: Regresssion
+      working-directory: ${{github.workspace}}/build
+      run: echo "🎉 The next Job is a test to convert an mpd to out.cmfm"
+      
+    - name: ConvertMPDtoEventTrack
+      working-directory: ${{github.workspace}}/build
+      run: ./dashEventfmp4 in.mpd out.cmfm 
+      
+    - name: printSamplesEventTrack
+      working-directory: ${{github.workspace}}/build
+      run: ./printEventSamples out.cmfm 
+      
+    - name: convertEventTracktoMPD
+      working-directory: ${{github.workspace}}/build
+      run: ./fmp4DASHEvent out.cmfm in.mpd 
