@@ -809,9 +809,9 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 								{
 									uint32_t ss = m.trun_.m_sentry[i].sample_size_;
 									std::vector<uint8_t> sample_data(ss);
-									std::cout << "======  found sample in movie fragment, presentation time " << pres_time <<
+									std::cout << " ======  found sample in movie fragment, presentation time " << pres_time <<
 										" duration " \
-										<< m.trun_.m_sentry[i].sample_duration_ << "sample size" << m.trun_.m_sentry[i].sample_size_ << "=====" << std::endl;
+										<< m.trun_.m_sentry[i].sample_duration_ << " sample size " << m.trun_.m_sentry[i].sample_size_ << " ===== " << std::endl;
 									for (unsigned int j = 0; j < ss; j++)
 										sample_data[j] = m.mdat_box_.box_data_[8 + data_offset + j];
 

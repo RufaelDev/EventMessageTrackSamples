@@ -69,6 +69,16 @@ namespace event_track {
 			presentation_time_delta_ = e.presentation_time_ - pres_time;
 		}
 
+		void print()
+		{
+			std::cout << " reserved (timescale) " << reserved_ << std::endl;
+			std::cout << " presentation_time_delta_ " << presentation_time_delta_ << std::endl;
+			std::cout << " id " << id_ << std::endl;
+			std::cout << " scheme id uri " << scheme_id_uri_ << std::endl;
+			std::cout << " value  " << value_ << std::endl;
+			std::cout << " message data b64 " << base64_encode(message_data_.data(), message_data_.size()) << std::endl;
+		}
+
 		size_t write(std::ostream &ostr)
 		{
 			char int_buf[4];

@@ -52,7 +52,7 @@ int main()
 
 	for (unsigned int i = 0; i < samples.size(); i++)
 	{
-		std::cout << "Event Message Track Sample "<< i + 1 <<":";
+		std::cout << " Event Message Track Sample "<< i + 1 <<":";
 		std::cout << " sample_presentation_time=" << samples[i].sample_presentation_time_;
 		std::cout << " sample_duration=" << samples[i].sample_duration_;
 		std::cout << " sample_data=";
