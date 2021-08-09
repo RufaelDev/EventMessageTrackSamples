@@ -577,6 +577,7 @@ void event_track::ingest_event_stream::write_to_dash_event_stream(std::string &o
 			// write each of the event messages as moof mdat combinations in sparse track 
 			for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
 			{
+				std::cout << " writing an event to output " << std::endl;
 				ot << "<Event "
 					<< "presentationTime=" << '"' << it2->second.presentation_time_ << '"' << " "  \
 					<< "duration=" << '"' << it2->second.event_duration_<< '"' << " "  \
@@ -734,8 +735,6 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 		}
 		std::cout << std::endl;
 		std::cout << "***  finished reading fmp4 fragments  ***" << std::endl;
-		std::cout << "***  read  fmp4 init fragment         ***" << std::endl;
-		std::cout << "***  read " << media_fragment_.size() << " fmp4 media fragments ***" << std::endl;
 
 		return 0;
 	}
