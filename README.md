@@ -39,15 +39,16 @@ Examples are for illustrative purpose.
 
 ## dashEventfmp4.cpp
 
-Program for converting MPD events in an EventStream Element with optionally added attributes @startTime and @endTime
+Program for converting MPD events in an EventStream Element with optionally added attributes @startTime and @endTime to 
+fragmented (CMAF based) event message track
 
 usage dashEventfmp4 in.mpd out_event_track.cmfm track_id target_segment_duration (0=entire track)
 
 ## fmp4DashEvent.cpp
 
-Program for converting an event track back to XML format based on EventStream
+Program for converting an event track (CMAF based) back to XML format based on EventStream
 
-usage fmp4DashEvent.cpp in_event_track.cmfm out.mpd
+usage fmp4DashEvent.cpp in_event_track.cmfm out.mpd warning does only work for CMAF based event tracks
 
 ## unittest.cpp
 Unit tests validation using catch framework https://github.com/catchorg/Catch2

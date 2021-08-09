@@ -292,7 +292,7 @@ bool event_track::get_sparse_moov(
 	return true;
 };
 
-bool compare_4cc(char *in, std::string &in_4cc)
+bool compare_4cc(char *in, std::string in_4cc)
 {
 	if (in[0] == in_4cc[0] && in[1] == in_4cc[1] && in[2] == in_4cc[2] && in[3] == in_4cc[3])
 		return true;
@@ -745,6 +745,7 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 		return 0;
 	}
 }
+<<<<<<< HEAD
 
 // parse an fmp4 file for media ingest
 int event_track::ingest_event_stream::print_samples_from_file(std::istream &infile, bool init_only)
@@ -872,3 +873,5 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 		return 0;
 	}
 }
+=======
+>>>>>>> refs/remotes/origin/main
