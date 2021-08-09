@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 		ingest_stream.print_samples_from_file(input, false);
 		input.close();
 
-		return 1;
+		return 0;
 	}
 	else
 	{

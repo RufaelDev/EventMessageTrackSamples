@@ -2,6 +2,7 @@
 #define EVENT_TRACK_H
 
 #include "fmp4stream.h"
+#include "base64.h"
 #include <vector>
 #include <algorithm>   
 #include <string>
@@ -71,6 +72,7 @@ namespace event_track {
 
 		void print()
 		{
+			std::cout << "== Event Message instance Box emib ==" << reserved_ << std::endl;
 			std::cout << " reserved (timescale) " << reserved_ << std::endl;
 			std::cout << " presentation_time_delta_ " << presentation_time_delta_ << std::endl;
 			std::cout << " id " << id_ << std::endl;

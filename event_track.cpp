@@ -791,7 +791,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 					m.moof_box_ = *it;
 					m.parse_moof();
 					bool mdat_found = false;
-					std::cout << "======  found movie fragment with base media decode time ===== " << m.tfdt_.base_media_decode_time_ << std::endl;
+					std::cout << "======  found movie fragment with base media decode time ===== " << m.tfdt_.base_media_decode_time_ << std::endl << std::endl;
 					it++;
 
 					// only support default base is moof and mdat immediately following (CMAF)
@@ -809,7 +809,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 								{
 									uint32_t ss = m.trun_.m_sentry[i].sample_size_;
 									std::vector<uint8_t> sample_data(ss);
-									std::cout << " ======  found sample in movie fragment, presentation time " << pres_time <<
+									std::cout << "======  found sample in movie fragment, presentation time " << pres_time <<
 										" duration " \
 										<< m.trun_.m_sentry[i].sample_duration_ << " sample size " << m.trun_.m_sentry[i].sample_size_ << " ===== " << std::endl;
 									for (unsigned int j = 0; j < ss; j++)
@@ -821,7 +821,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 									{
 										while (bts < sample_data.size()) {
 											EventMessageInstanceBox im_box;
-											bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
+											bts += im_box.parse((char *) sample_data.data() + bts, sample_data.size());
 											im_box.print();
 											// auto e = im_box.to_emsg_v1(pres_time);
 											// events_list_[im_box.scheme_id_uri_][im_box.id_] = e;
@@ -861,8 +861,6 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 		}
 		std::cout << std::endl;
 		std::cout << "***  finished reading fmp4 fragments  ***" << std::endl;
-		std::cout << "***  read  fmp4 init fragment         ***" << std::endl;
-		std::cout << "***  read " << media_fragment_.size() << " fmp4 media fragments ***" << std::endl;
 
 		return 0;
 	}
