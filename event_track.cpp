@@ -745,7 +745,6 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 		return 0;
 	}
 }
-<<<<<<< HEAD
 
 // parse an fmp4 file for media ingest
 int event_track::ingest_event_stream::print_samples_from_file(std::istream &infile, bool init_only)
@@ -873,5 +872,3 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 		return 0;
 	}
 }
-=======
->>>>>>> refs/remotes/origin/main
