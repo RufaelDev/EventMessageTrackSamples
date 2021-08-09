@@ -50,4 +50,4 @@ jobs:
       
     - name: convertEventTracktoMPD
       working-directory: ${{github.workspace}}/build
-      run: ./fmp4DASHEvent out.cmfm in.mpd 
+      run: ./fmp4DashEvent out.cmfm in.mpd 
