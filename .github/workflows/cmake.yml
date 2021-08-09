@@ -37,3 +37,18 @@ jobs:
       run: ./unittest
       run: echo "🎉 The next Job is a test to convert an mpd to out.cmfm"
       
+    - name: CopyInMPD
+      working-directory: ${{github.workspace}}
+      run: cp in.mpd build/in.mpd
+      
+    - name: ConvertMPDtoEventTrack
+      working-directory: ${{github.workspace}}/build
+      run: ./dashEventfmp4 in.mpd out.cmfm 
+      
+    - name: printSamplesEventTrack
+      working-directory: ${{github.workspace}}/build
+      run: ./printEventSamples out.cmfm 
+      
+    - name: convertEventTracktoMPD
+      working-directory: ${{github.workspace}}/build
+      run: ./fmp4DASHEvent out.cmfm in.mpd 
