@@ -3,7 +3,7 @@
 	
     All Rights Reserved CodeShop B.V. 2021 - 
 */
-#include "find_event_samples.hpp"
+#include "event_track.h"
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 
@@ -24,9 +24,9 @@ TEST_CASE("test with randomly generated events]") {
 			e = generate_random_event(true);
 
 		if (i % 19 == 0) // introduce indefinete duration event
-			e.event_duration = 0xFFFFFFFF; 
+			e.event_duration_ = 0xFFFFFFFF; 
 
-		e.id = (unsigned int)i;
+		e.id_ = (unsigned int)i;
 		emsgs_in.push_back(e);
 	}
 
@@ -37,18 +37,18 @@ TEST_CASE("test with randomly generated events]") {
 	{
 		for(unsigned int i=0; i < samples.size();i++)
 			
-			for (unsigned int j = 0; j < samples[i].instance_boxes.size(); j++) 
+			for (unsigned int j = 0; j < samples[i].instance_boxes_.size(); j++) 
 			{
 				// check sample presentation and (stored) event presentation times match
-				uint64_t dt = samples[i].sample_presentation_time + samples[i].instance_boxes[j].presentation_time_delta;
-				uint64_t st = (uint64_t)samples[i].instance_boxes[j].message_data[0];
+				uint64_t dt = samples[i].sample_presentation_time_ + samples[i].instance_boxes_[j].presentation_time_delta_;
+				uint64_t st = (uint64_t)samples[i].instance_boxes_[j].message_data_[0];
 				
 				if (dt < 256)
 					REQUIRE(st == dt);
 
 				// check that the duration of a 0 duration event is enclosed in a sample with a single tick
-				uint32_t dur_e =  samples[i].instance_boxes[j].event_duration;
-				uint32_t dur_s = samples[i].sample_duration;
+				uint32_t dur_e =  samples[i].instance_boxes_[j].event_duration_;
+				uint32_t dur_s = samples[i].sample_duration_;
 				
 				if (dur_e == 0)
 					REQUIRE(dur_s == 1);
@@ -61,23 +61,23 @@ TEST_CASE("test with randomly generated events]") {
 		for (unsigned int i = 0; i < emsgs_in.size(); i++)
 			for (unsigned int j = 0; j < samples.size(); j++)
 			{
-			   int64_t s_t = samples[j].sample_presentation_time;
-			   int64_t s_td =samples[j].sample_duration + s_t;
+			   int64_t s_t = samples[j].sample_presentation_time_;
+			   int64_t s_td =samples[j].sample_duration_ + s_t;
 
-			   int64_t e_t = emsgs_in[i].presentation_time;
-			   int64_t e_td = emsgs_in[i].presentation_time + emsgs_in[i].event_duration;
-			   if (emsgs_in[i].event_duration == 0)
+			   int64_t e_t = emsgs_in[i].presentation_time_;
+			   int64_t e_td = emsgs_in[i].presentation_time_ + emsgs_in[i].event_duration_;
+			   if (emsgs_in[i].event_duration_ == 0)
 				   e_td += 1;
-			   int32_t l_id = emsgs_in[i].id;
+			   int32_t l_id = emsgs_in[i].id_;
 
 			   // overlapping means event starts at least before sample end 
 			   // event ends at least after sample start
 			   if (e_t < s_td && e_td > s_t) {
 				   // overlapping
 				   bool id_found = false;
-				   for (int k = 0; k < samples[j].instance_boxes.size(); k++)
+				   for (int k = 0; k < samples[j].instance_boxes_.size(); k++)
 				   {
-					   if (samples[j].instance_boxes[k].id == l_id)
+					   if (samples[j].instance_boxes_[k].id_ == l_id)
 						   id_found = true;
 				   }
 				   REQUIRE(id_found);
@@ -89,13 +89,13 @@ TEST_CASE("test with randomly generated events]") {
 	{
 		for (unsigned int j = 0; j < samples.size(); j++)
 		{
-			int64_t sp = samples[j].sample_presentation_time;
-			int64_t sp_d = samples[j].sample_presentation_time + samples[j].sample_duration;
+			int64_t sp = samples[j].sample_presentation_time_;
+			int64_t sp_d = samples[j].sample_presentation_time_ + samples[j].sample_duration_;
 
-			for (int k = 0; k < samples[j].instance_boxes.size(); k++)
+			for (int k = 0; k < samples[j].instance_boxes_.size(); k++)
 			{
-				int64_t e_t = samples[j].sample_presentation_time + samples[j].instance_boxes[k].presentation_time_delta;
-				int64_t e_d = samples[j].instance_boxes[k].event_duration;
+				int64_t e_t = samples[j].sample_presentation_time_ + samples[j].instance_boxes_[k].presentation_time_delta_;
+				int64_t e_d = samples[j].instance_boxes_[k].event_duration_;
 
 				if (e_d = 0)
 					e_d += 1;
@@ -116,14 +116,14 @@ TEST_CASE("test with randomly generated events]") {
 	{
 		int64_t last_time = -1;
 
-		REQUIRE(samples[0].sample_presentation_time == segment_start_time);
+		REQUIRE(samples[0].sample_presentation_time_ == segment_start_time);
 		size_t last_index = samples.size() - 1;
-		REQUIRE(samples[last_index].sample_presentation_time + samples[last_index].sample_duration== segment_end_time);
+		REQUIRE(samples[last_index].sample_presentation_time_ + samples[last_index].sample_duration_== segment_end_time);
 
 		for (unsigned int j = 0; j < samples.size(); j++)
 		{
-			int64_t sp = samples[j].sample_presentation_time;
-			int64_t sp_d = samples[j].sample_presentation_time + samples[j].sample_duration;
+			int64_t sp = samples[j].sample_presentation_time_;
+			int64_t sp_d = samples[j].sample_presentation_time_ + samples[j].sample_duration_;
 			if (last_time != -1)
 			{
 				REQUIRE(last_time == sp);

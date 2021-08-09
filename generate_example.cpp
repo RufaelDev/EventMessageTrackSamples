@@ -5,7 +5,7 @@
     All Rights Reserved CodeShop B.V. 2021 - 
 */
 
-#include "find_event_samples.hpp"
+#include "event_track.h"
 #include <iostream>
 
 using namespace event_track;
@@ -24,7 +24,7 @@ int main()
 		//if (i % 19 == 0) // introduce indefinete duration event
 		//	e.event_duration = 0xFFFFFFFF;
 
-		e.id = (unsigned int) i;
+		e.id_ = (unsigned int) i;
 		emsgs_in.push_back(e);
 	}
 
@@ -35,15 +35,15 @@ int main()
 	std::sort(emsgs_in.begin(), emsgs_in.end(),
 		[](const DASHEventMessageBoxv1 & a, const DASHEventMessageBoxv1 & b) -> bool
 	{
-		return a.presentation_time < b.presentation_time;
+		return a.presentation_time_ < b.presentation_time_;
 	});
 
 
 	for (unsigned int i = 0; i < emsgs_in.size(); i++)
 	{
-		std::cout << " Input DASH Event: id="    << emsgs_in[i].id;
-		std::cout << " presentation_time=" << emsgs_in[i].presentation_time;
-		std::cout << " event_duration="    << emsgs_in[i].event_duration;
+		std::cout << " Input DASH Event: id="    << emsgs_in[i].id_;
+		std::cout << " presentation_time=" << emsgs_in[i].presentation_time_;
+		std::cout << " event_duration="    << emsgs_in[i].event_duration_;
 		std::cout << std::endl;
 	}
 
@@ -53,18 +53,18 @@ int main()
 	for (unsigned int i = 0; i < samples.size(); i++)
 	{
 		std::cout << "Event Message Track Sample "<< i + 1 <<":";
-		std::cout << " sample_presentation_time=" << samples[i].sample_presentation_time;
-		std::cout << " sample_duration=" << samples[i].sample_duration;
+		std::cout << " sample_presentation_time=" << samples[i].sample_presentation_time_;
+		std::cout << " sample_duration=" << samples[i].sample_duration_;
 		std::cout << " sample_data=";
 
-		if (samples[i].instance_boxes.size() == 0)
+		if (samples[i].instance_boxes_.size() == 0)
 			std::cout << std::endl << " EventMessageEmtpyBox";
 		else {
 			//std::cout << std::endl;
-			for (unsigned int k = 0; k < samples[i].instance_boxes.size(); k++)
+			for (unsigned int k = 0; k < samples[i].instance_boxes_.size(); k++)
 			{
-				EventMessageInstanceBox b = samples[i].instance_boxes[k];
-				std::cout << std::endl << "  EventMessageInstanceBox(" << "id=" << b.id << ",presentation_time_delta=" << b.presentation_time_delta << ",event_duration=" << b.event_duration << ") ";
+				EventMessageInstanceBox b = samples[i].instance_boxes_[k];
+				std::cout << std::endl << "  EventMessageInstanceBox(" << "id=" << b.id_ << ",presentation_time_delta=" << b.presentation_time_delta_ << ",event_duration=" << b.event_duration_ << ") ";
 			}
 		}
 		std::cout << std::endl;
