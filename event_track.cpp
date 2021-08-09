@@ -292,7 +292,7 @@ bool event_track::get_sparse_moov(
 	return true;
 };
 
-bool compare_4cc(char *in, std::string &in_4cc)
+bool compare_4cc(char *in, std::string in_4cc)
 {
 	if (in[0] == in_4cc[0] && in[1] == in_4cc[1] && in[2] == in_4cc[2] && in[3] == in_4cc[3])
 		return true;
