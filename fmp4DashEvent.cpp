@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
 		ingest_stream.write_to_dash_event_stream(out_file);
 
-		return 1;
+		return 0;
 	}
 	else
 	{
