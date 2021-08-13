@@ -94,6 +94,8 @@ uint32_t event_track::find_event_samples(
 	return (uint32_t)samples_out.size();
 };
 
+static uint32_t sequence_number = 0;
+
 void event_track::write_evt_samples_as_fmp4_fragment(
 	std::vector<event_track::EventSample> &samples_in,
 	std::ostream &ostr, 
@@ -185,7 +187,7 @@ void event_track::write_evt_samples_as_fmp4_fragment(
 		ostr.put('d');
 		fmp4_write_uint32((uint32_t)0u, int_buf);
 		ostr.write(int_buf, 4);
-		fmp4_write_uint32((uint32_t)track_id, int_buf);
+		fmp4_write_uint32((uint32_t)sequence_number++, int_buf);
 		ostr.write(int_buf, 4);
 
 		// write traf 8 bytes total 32 bytes

@@ -15,4 +15,5 @@ add_executable(unittest unittest.cpp event_track.cpp fmp4stream.cpp catch.hpp ba
 add_executable(generate_example generate_example.cpp event_track.cpp fmp4stream.cpp base64.cpp event_track.h fmp4stream.h)
 add_executable(fmp4DashEvent fmp4DashEvent.cpp event_track.cpp fmp4stream.cpp base64.cpp event_track.h fmp4stream.h)
 add_executable(dashEventfmp4 dashEventfmp4.cpp event_track.cpp fmp4stream.cpp base64.cpp tinyxml2.cpp event_track.h fmp4stream.h)
+add_executable(gen_avail_track gen_avails.cpp event_track.cpp fmp4stream.cpp base64.cpp tinyxml2.cpp event_track.h fmp4stream.h)
 add_executable(printEventSamples printEventSamples.cpp event_track.cpp fmp4stream.cpp base64.cpp tinyxml2.cpp event_track.h fmp4stream.h)
