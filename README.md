@@ -50,5 +50,18 @@ Program for converting an event track (CMAF based) back to XML format based on E
 
 usage fmp4DashEvent.cpp in_event_track.cmfm out.mpd warning does only work for CMAF based event tracks
 
+## gen_avails.cpp
+
+Program for converting an event track (CMAF based) back to XML format based on EventStream
+
+usage gen_avail_track track_duration[ms] segment_duration[ms] slot_duration[ms] avail_interval[ms]
+
+e.g. 
+
+gen_avail_track 600000 2000 30000 180000
+
+generates an avail event message track of 600 seconds, with 2 second segments and slots of 30 seconds every 180 seconds. 
+The avails use the splice insert command from SCTE-35
+
 ## unittest.cpp
 Unit tests validation using catch framework https://github.com/catchorg/Catch2
