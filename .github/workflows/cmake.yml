@@ -54,7 +54,7 @@ jobs:
       
     - name: generate avail track and mpd avail
       working-directory: ${{github.workspace}}/build
-      run: ./gen_avails 600000 2000 30000 180000
+      run: ./gen_avail_track 600000 2000 30000 180000
 
     - name: generate examples
       working-directory: ${{github.workspace}}/build
