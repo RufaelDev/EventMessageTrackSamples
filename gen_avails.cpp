@@ -47,75 +47,15 @@ int main(int argc, char *argv[])
 	uint32_t avail_interval = 0;
 	uint32_t track_id = 99; // default track_id
 
-	if (argc > 4){
-		
-	    track_duration  = atoi(argv[1]);
-	    seg_duration_ticks_ms = atoi(argv[2]);
+	if (argc > 4) {
+
+		track_duration = atoi(argv[1]);
+		seg_duration_ticks_ms = atoi(argv[2]);
 		avail_duration = atoi(argv[3]);
 		avail_interval = atoi(argv[4]);
-		
-		
-		uint32_t start_time = 0;
-		uint32_t id_count = 0;
-	    while(start_time < track_duration)
-		{
-		    event_track::DASHEventMessageBoxv1 ev;
-			ev.id_= id_count++;
-			ev.presentation_time_ = start_time; 
-			ev.event_duration_ = avail_duration;
-			ev.timescale_ = timescale; 
-			ev.scheme_id_uri_ = "urn:scte:scte35:2013:bin"; 
-			fmp4_stream::gen_splice_insert(ev.message_data_, ev.id_, ev.event_duration_ * 90);
-			start_time+=avail_interval;
-			events.push_back(ev);
-		}
-		
-		event_track::write_to_segmented_event_track_file(
-			     out_file_cmfm, events,
-			     track_id, 0,  
-			     track_duration, "test_urn", 
-			     seg_duration_ticks_ms, timescale);
+		gen_avail_files(track_duration, seg_duration_ticks_ms, avail_duration, avail_interval);
 
-		std::cout << "wrote event track " << std::endl; 
-
-
-		std::cout << "generating the MPD" << std::endl;
-		std::ofstream ot = std::ofstream("out_avail_track.mpd");
-		ot << "<EventStream " << std::endl;
-		if (events[0].scheme_id_uri_.compare("urn:scte:scte35:2013:bin") == 0) // convert binary scte 214 to xml + bin
-		{
-			ot << "schemeIdUri=" << '"' << "urn:scte:scte35:2014:xml+bin" << '"' << std::endl;
-		}
-		else {
-			ot << "schemeIdUri=" << '"' << events[0].scheme_id_uri_ << '"' << std::endl;
-		}
-		ot << " timescale=" << '"' << timescale << '"' << ">" << std::endl;
-
-		// write each of the event messages as moof mdat combinations in sparse track 
-		for (auto it2 = events.begin(); it2 != events.end(); it2++)
-		{
-			std::cout << " writing an event to output " << std::endl;
-			ot << "<Event "
-				<< "presentationTime=" << '"' << it2->presentation_time_ << '"' << " "  \
-				<< "duration=" << '"' << it2->event_duration_ << '"' << " "  \
-				<< "id=" << '"' << it2->id_ << '"';
-			if (it2->scheme_id_uri_.compare("urn:scte:scte35:2013:bin") == 0) // write binary scte as xml + bin as defined by scte-35
-			{
-				ot << '>' << std::endl << "  <Signal xmlns=" << '"' << "http://www.scte.org/schemas/35/2016" << '"' << '>' << std::endl \
-					<< "    <Binary>" << base64_encode(it2->message_data_.data(), (unsigned int)it2->message_data_.size()) << "</Binary>" << std::endl
-					<< "  </Signal>" << std::endl;
-			}
-			else {
-				ot << " " << "contentEncoding=" << '"' << "base64" << '"' << '>' << std::endl
-					<< base64_encode(it2->message_data_.data(), (unsigned int)it2->message_data_.size()) << std::endl;
-			}
-			ot << "</Event>" << std::endl;
-		}
-		
-		ot << "</EventStream> " << std::endl;
-	    ot.close();
-
-		return 0;
+	
 	}
 	else
 	{

@@ -264,6 +264,12 @@ namespace event_track {
 		          uint32_t timescale, uint32_t track_id, 
 		          std::vector<uint8_t> &sparse_moov);
     
+	// function for generating track files with avails and scte-35
+	int gen_avail_files(uint32_t track_duration = 60000,
+		uint32_t seg_duration_ticks_ms = 0,
+		uint32_t avail_duration = 30000,
+		uint32_t avail_interval = 1800000);
+
 		// helper function generate random events for testing and example generation
 	// first arg set duration to zero, second and third distribution of presentation time and duration
 	DASHEventMessageBoxv1 generate_random_event(bool set_duration_to_zero = false, uint32_t max_p = 150, uint32_t max_d = 20);
