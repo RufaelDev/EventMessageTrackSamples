@@ -66,4 +66,6 @@ int main(int argc, char *argv[])
 		std::cout << std::endl;
 		std::cout << " Usage: gen_avails track_duration[ms] segment_duration avail_duration[ms] avail_interval[ms]" << std::endl;
 	}
+	
+	return 0;
 }
