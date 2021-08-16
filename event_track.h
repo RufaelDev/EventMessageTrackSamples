@@ -128,6 +128,54 @@ namespace event_track {
 			return bytes_written;
 		}
 
+		//! enable writing emsg v1 to allow testing with old version of oriign
+		size_t write_as_emsg_v1(std::ostream &ostr, uint64_t presentation_time)
+		{
+			char int_buf[4];
+			char long_buf[8];
+			uint32_t bytes_written = 0;
+
+			uint32_t sz = (uint32_t)this->size();
+			fmp4_write_uint32(sz, int_buf);
+			ostr.write((char *)int_buf, 4);
+			bytes_written += 4;
+
+			ostr.put('e');
+			ostr.put('m');
+			ostr.put('s');
+			ostr.put('g');
+			bytes_written += 4;
+			ostr.put((uint8_t)1);
+			ostr.put(0u);
+			ostr.put(0u);
+			ostr.put(0u);
+			bytes_written += 4;
+
+			fmp4_write_uint32(reserved_, int_buf);
+			ostr.write(int_buf, 4);
+			bytes_written += 4;
+			fmp4_write_int64(presentation_time_delta_ + presentation_time, long_buf);
+			ostr.write(long_buf, 8);
+			bytes_written += 8;
+			fmp4_write_uint32(event_duration_, int_buf);
+			ostr.write(int_buf, 4);
+			bytes_written += 4;
+			fmp4_write_uint32(id_, int_buf);
+			ostr.write(int_buf, 4);
+			bytes_written += 4;
+			ostr.write(scheme_id_uri_.c_str(), scheme_id_uri_.size() + 1);
+			bytes_written += (uint32_t)scheme_id_uri_.size() + 1;
+			ostr.write(value_.c_str(), value_.size() + 1);
+			bytes_written += (uint32_t)value_.size() + 1;
+
+			if (message_data_.size())
+				ostr.write((char *)&message_data_[0], message_data_.size());
+
+			bytes_written += (uint32_t)message_data_.size();
+
+			return bytes_written;
+		}
+
 		uint32_t parse(const char *ptr, unsigned int data_size)
 		{
 			if (data_size > 8) 
@@ -217,6 +265,22 @@ namespace event_track {
 				return t_size;
 			}
 		}
+
+		size_t write_as_emsgv1(std::ostream &ostr)
+		{
+			if (is_emeb_ || instance_boxes_.size() == 0)
+			{
+				ostr.write((const char *)&emeb[0], 8);
+				return 8;
+			}
+			else
+			{
+				size_t t_size = 0;
+				for (unsigned int y = 0; y < instance_boxes_.size(); y++)
+					t_size += instance_boxes_[y].write_as_emsg_v1(ostr,this->sample_presentation_time_);
+				return t_size;
+			}
+		}
 	};
 
 
@@ -268,9 +332,7 @@ namespace event_track {
 	int gen_avail_files(uint32_t track_duration = 60000,
 		uint32_t seg_duration_ticks_ms = 0,
 		uint32_t avail_duration = 30000,
-		uint32_t avail_interval = 1800000);
-
-		// helper function generate random events for testing and example generation
+		uint32_t avail_interval = 1800000);		// helper function generate random events for testing and example generation
 	// first arg set duration to zero, second and third distribution of presentation time and duration
 	DASHEventMessageBoxv1 generate_random_event(bool set_duration_to_zero = false, uint32_t max_p = 150, uint32_t max_d = 20);
 	//static void write_embe(std::ostream &ostr, uint64_t timestamp_tfdt, uint32_t track_id, uint32_t duration_in);
