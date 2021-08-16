@@ -53,8 +53,11 @@ int main(int argc, char *argv[])
 		seg_duration_ticks_ms = atoi(argv[2]);
 		avail_duration = atoi(argv[3]);
 		avail_interval = atoi(argv[4]);
-		gen_avail_files(track_duration, seg_duration_ticks_ms, avail_duration, avail_interval);
+		uint64_t st = 0;
+		if (argc >5)
+			st = atol(argv[5]);
 
+		gen_avail_files(track_duration, seg_duration_ticks_ms, avail_duration, avail_interval,st);
 	
 	}
 	else

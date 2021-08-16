@@ -884,7 +884,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 }
 
 
-int event_track::gen_avail_files(uint32_t track_duration, uint32_t seg_duration_ticks_ms, uint32_t avail_duration, uint32_t avail_interval)
+int event_track::gen_avail_files(uint32_t track_duration, uint32_t seg_duration_ticks_ms, uint32_t avail_duration, uint32_t avail_interval, uint64_t start_time)
 {
 	std::vector<event_track::DASHEventMessageBoxv1> events;
 
@@ -894,24 +894,27 @@ int event_track::gen_avail_files(uint32_t track_duration, uint32_t seg_duration_
 	uint32_t timescale = 1000;
 	uint32_t track_id = 99; // default track_id
 
-	uint32_t start_time = 0;
 	uint32_t id_count = 0;
-	while (start_time < track_duration)
+
+	uint64_t track_duration_2 = start_time + track_duration;
+	uint64_t st_2 = start_time;
+
+	while (st_2 < track_duration_2)
 	{
 		event_track::DASHEventMessageBoxv1 ev;
 		ev.id_ = id_count++;
-		ev.presentation_time_ = start_time;
+		ev.presentation_time_ = st_2;
 		ev.event_duration_ = avail_duration;
 		ev.timescale_ = timescale;
 		ev.scheme_id_uri_ = "urn:scte:scte35:2013:bin";
 		fmp4_stream::gen_splice_insert(ev.message_data_, ev.id_, ev.event_duration_ * 90);
-		start_time += avail_interval;
+		st_2 += avail_interval;
 		events.push_back(ev);
 	}
 
 	event_track::write_to_segmented_event_track_file(
 		out_file_cmfm, events,
-		track_id, 0,
+		track_id, start_time,
 		track_duration, "test_urn",
 		seg_duration_ticks_ms, timescale);
 

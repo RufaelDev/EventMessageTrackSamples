@@ -366,7 +366,8 @@ namespace event_track {
 	int gen_avail_files(uint32_t track_duration = 60000,
 		uint32_t seg_duration_ticks_ms = 0,
 		uint32_t avail_duration = 30000,
-		uint32_t avail_interval = 1800000);		// helper function generate random events for testing and example generation
+		uint32_t avail_interval = 1800000, 
+		uint64_t start_time = 0);		// helper function generate random events for testing and example generation
 	// first arg set duration to zero, second and third distribution of presentation time and duration
 	DASHEventMessageBoxv1 generate_random_event(bool set_duration_to_zero = false, uint32_t max_p = 150, uint32_t max_d = 20);
 	//static void write_embe(std::ostream &ostr, uint64_t timestamp_tfdt, uint32_t track_id, uint32_t duration_in);
