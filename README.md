@@ -37,18 +37,18 @@ Subsequently it prints the Event message track samples formatting.
 
 Examples are for illustrative purpose.
 
-## dashEventfmp4.cpp
+## dash_event_fmp4.cpp
 
 Program for converting MPD events in an EventStream Element with optionally added attributes @startTime and @endTime to 
 fragmented (CMAF based) event message track
 
-usage dashEventfmp4 in.mpd out_event_track.cmfm track_id target_segment_duration (0=entire track)
+usage dash_event_fmp4 in.mpd out_event_track.cmfm track_id target_segment_duration (0=entire track)
 
-## fmp4DashEvent.cpp
+## fmp4_dash_event.cpp
 
 Program for converting an event track (CMAF based) back to XML format based on EventStream
 
-usage fmp4DashEvent.cpp in_event_track.cmfm out.mpd warning does only work for CMAF based event tracks
+usage fmp4_dash_event in_event_track.cmfm out.mpd warning does only work for CMAF based event tracks
 
 ## gen_avails.cpp
 
