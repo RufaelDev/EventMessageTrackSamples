@@ -1,5 +1,9 @@
 #include "event_track.h"
 #include "base64.h"
+
+// macro either write DASHEventMessageBox v1 (original proposal) or event message instance box (emib) ISO standard
+const bool USE_EMSG_V1 = false;
+
 using namespace fmp4_stream;
 
 // base 64 sparse movie header
@@ -266,8 +270,12 @@ void event_track::write_evt_samples_as_fmp4_fragment(
 		ostr.put('t');
 
 		// write the emsg as an mdat box
-		for (int i = 0; i < samples_in.size(); i++)
-			samples_in[i].write_as_emsgv1(ostr);
+		for (int i = 0; i < samples_in.size(); i++){
+			if (USE_EMSGV1_)
+			   samples_in[i].write_as_emsgv1(ostr);
+		        else 
+		           samples_in[i].write(ostr);
+		}
 
 	}
 	return;
