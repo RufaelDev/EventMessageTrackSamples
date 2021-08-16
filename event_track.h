@@ -26,7 +26,7 @@ namespace event_track {
 	};
 
 	//! struct to store a DASHEventMessageBoxv1
-	struct DASHEventMessageBoxv1
+	struct DASHEventMessageBoxv1 : fmp4_stream::full_box
 	{
 		// version omitted
 		// flags   ommited
@@ -37,6 +37,40 @@ namespace event_track {
 		std::string 	scheme_id_uri_;
 		std::string		value_;
 		std::vector<uint8_t>    message_data_;
+
+		uint32_t parse(const char *ptr, unsigned int data_size)
+		{
+			if (data_size > 8)
+			{
+				fmp4_stream::full_box::parse(ptr);
+				uint64_t offset = full_box::size();
+
+				timescale_ = fmp4_read_uint32(ptr + offset);
+				//cout << "timescale: " << timescale << endl;
+				offset += 4;
+				presentation_time_ = fmp4_read_uint64(ptr + offset);
+				//cout << "presentation time: " << presentation_time << endl;
+				offset += 8;
+				event_duration_ = fmp4_read_uint32(ptr + offset);
+				//cout << "event duration: " << event_duration << endl;
+				offset += 4;
+				id_ = fmp4_read_uint32(ptr + offset);
+				offset += 4;
+				//cout << "id: " << id << endl;
+				scheme_id_uri_ = std::string(ptr + offset);
+				offset = offset + scheme_id_uri_.size() + 1;
+				//cout << "scheme_id_uri: " << scheme_id_uri << endl;
+				value_ = std::string(ptr + offset);
+				//cout << "value: " << value << endl;
+				offset = offset + value_.size() + 1;
+
+				for (unsigned int i = (unsigned int)offset; i < size_; i++)
+					message_data_.push_back(*(ptr + (size_t)i));
+
+				return size_;
+			}
+			return 0;
+		}
 	};
 
 	//! struct to store a EventMessageInstanceBox 
