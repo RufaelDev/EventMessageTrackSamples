@@ -915,7 +915,7 @@ int event_track::gen_avail_files(uint32_t track_duration, uint32_t seg_duration_
 	event_track::write_to_segmented_event_track_file(
 		out_file_cmfm, events,
 		track_id, start_time,
-		track_duration, "test_urn",
+		track_duration + start_time, "test_urn",
 		seg_duration_ticks_ms, timescale);
 
 	std::cout << "wrote event track " << std::endl;
