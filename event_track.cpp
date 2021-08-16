@@ -271,7 +271,7 @@ void event_track::write_evt_samples_as_fmp4_fragment(
 
 		// write the emsg as an mdat box
 		for (int i = 0; i < samples_in.size(); i++){
-			if (USE_EMSGV1_)
+			if (USE_EMSG_V1)
 			   samples_in[i].write_as_emsgv1(ostr);
 		        else 
 		           samples_in[i].write(ostr);
