@@ -42,15 +42,15 @@ jobs:
       
     - name: Convert MPD to EventTrack
       working-directory: ${{github.workspace}}/build
-      run: ./dashEventfmp4 in.mpd out.cmfm 
+      run: ./dash_event_fmp4 in.mpd out.cmfm 
       
     - name: printSamplesEventTrack
       working-directory: ${{github.workspace}}/build
-      run: ./printEventSamples out.cmfm 
+      run: ./print_event_samples out.cmfm 
       
     - name: convertEventTrack to MPD
       working-directory: ${{github.workspace}}/build
-      run: ./fmp4DashEvent out.cmfm in.mpd 
+      run: ./fmp4_dash_event out.cmfm in.mpd 
       
     - name: generate avail track and mpd avail
       working-directory: ${{github.workspace}}/build
