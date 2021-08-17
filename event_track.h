@@ -71,6 +71,18 @@ namespace event_track {
 			}
 			return 0;
 		}
+		
+		void print()
+		{
+			std::cout << "== Event Message instance Box emsg v1 ==" << std::endl;
+			std::cout << " reserved (timescale) " << timescale_ << std::endl;
+			std::cout << " presentation_time: " << presentation_time_ << std::endl;
+			std::cout << " event_duration: " << event_duration_ << std::endl;
+			std::cout << " id: " << id_ << std::endl;
+			std::cout << " scheme id uri: " << scheme_id_uri_ << std::endl;
+			std::cout << " value:  " << value_ << std::endl;
+			std::cout << " message data b64: " << base64_encode(message_data_.data(), message_data_.size()) << std::endl;
+		}
 	};
 
 	//! struct to store a EventMessageInstanceBox 
@@ -106,9 +118,10 @@ namespace event_track {
 
 		void print()
 		{
-			std::cout << "== Event Message instance Box emib ==" << reserved_ << std::endl;
+			std::cout << "== Event Message instance Box emib ==" << std::endl;
 			std::cout << " reserved (timescale) " << reserved_ << std::endl;
 			std::cout << " presentation_time_delta_ " << presentation_time_delta_ << std::endl;
+			std::cout << " event_duration: " << event_duration_ << std::endl;
 			std::cout << " id " << id_ << std::endl;
 			std::cout << " scheme id uri " << scheme_id_uri_ << std::endl;
 			std::cout << " value  " << value_ << std::endl;
