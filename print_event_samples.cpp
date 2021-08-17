@@ -5,8 +5,6 @@ https://github.com/unifiedstreaming/fmp4-ingest
 Copyright (C) 2009-2021 CodeShop B.V.
 http://www.code-shop.com
 
-convert metadatatrack to DASH Events in XML format SCTE-214
-
 ******************************************************************************/
 
 #include "fmp4stream.h"
