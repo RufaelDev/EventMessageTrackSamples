@@ -839,12 +839,21 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 									unsigned int bts = 0;
 									if (ss > 8)
 									{
-										while (bts < sample_data.size()) {
-											EventMessageInstanceBox im_box;
-											bts += im_box.parse((char *) sample_data.data() + bts, sample_data.size());
-											im_box.print();
-											// auto e = im_box.to_emsg_v1(pres_time);
-											// events_list_[im_box.scheme_id_uri_][im_box.id_] = e;
+										if (compare_4cc((char *) &sample_data[4], "emib")) {
+											while (bts < sample_data.size()) {
+												EventMessageInstanceBox im_box;
+												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
+												im_box.print()
+											}
+										}
+										else if (compare_4cc((char *)&sample_data[4], "emsg"))
+										{
+											while (bts < sample_data.size()) 
+											{
+												DASHEventMessageBoxv1 e;
+												bts += e.parse((char *)sample_data.data() + bts, sample_data.size());
+												e.print();
+											}
 										}
 									}
 									else
