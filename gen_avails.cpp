@@ -35,8 +35,7 @@ extern std::string moov_64_enc;
 */
 int main(int argc, char *argv[])
 {
-	std::vector<event_track::DASHEventMessageBoxv1> events;
-	
+
 	std::string out_file_cmfm = "out_avail_track.cmfm";
 	std::string out_file_mpd = "out_avail_track.mpd";
 	
