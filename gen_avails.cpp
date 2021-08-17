@@ -6,7 +6,7 @@ https://github.com/unifiedstreaming/fmp4-ingest
 Copyright (C) 2009-2021 CodeShop B.V.
 http://www.code-shop.com
 
-convert DASH Events in an XML file to a timed metadata track
+generate an avail track with scte-35 splice_insert in event messages
 
 ******************************************************************************/
 
