@@ -35,7 +35,7 @@ Small program to create examples of Event message track sample formatting.
 It prints random events to the std::out. 
 Subsequently it prints the Event message track samples formatting.
 
-Examples are for illustrative purpose.
+Examples are for illustrative purpose and written to std::out.
 
 ## dash_event_fmp4.cpp
 
@@ -52,7 +52,7 @@ usage fmp4_dash_event in_event_track.cmfm out.mpd warning does only work for CMA
 
 ## gen_avails.cpp
 
-Program for converting an event track (CMAF based) back to XML format based on EventStream
+Program for creating an event track (CMAF based) and XML representation of periodic splice inserts to signal ad breaks.
 
 usage gen_avail_track track_duration[ms] segment_duration[ms] slot_duration[ms] avail_interval[ms]
 
