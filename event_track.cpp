@@ -843,7 +843,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 											while (bts < sample_data.size()) {
 												EventMessageInstanceBox im_box;
 												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
-												im_box.print()
+												im_box.print();
 											}
 										}
 										else if (compare_4cc((char *)&sample_data[4], "emsg"))
