@@ -63,5 +63,9 @@ gen_avail_track 600000 2000 30000 180000
 generates an avail event message track of 600 seconds, with 2 second segments and slots of 30 seconds every 180 seconds. 
 The avails use the splice insert command from SCTE-35
 
+## print_event_samples.cpp
+
+prints the contents of event samples (emib, emeb) etc... of an event track
+
 ## unittest.cpp
 Unit tests validation using catch framework https://github.com/catchorg/Catch2
