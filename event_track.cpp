@@ -711,7 +711,7 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 										if (compare_4cc((char *) &sample_data[4], "emib")) {
 											while (bts < sample_data.size()) {
 												EventMessageInstanceBox im_box;
-												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
+												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
 												auto e = im_box.to_emsg_v1(pres_time);
 												events_list_[im_box.scheme_id_uri_][im_box.id_] = e;
 											}
@@ -721,7 +721,7 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 											while (bts < sample_data.size()) 
 											{
 												DASHEventMessageBoxv1 e;
-												bts += e.parse((char *)sample_data.data() + bts, sample_data.size());
+												bts += e.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
 												events_list_[e.scheme_id_uri_][e.id_] = e;
 											}
 										}
@@ -842,7 +842,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 										if (compare_4cc((char *) &sample_data[4], "emib")) {
 											while (bts < sample_data.size()) {
 												EventMessageInstanceBox im_box;
-												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size());
+												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
 												im_box.print();
 											}
 										}
@@ -851,7 +851,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 											while (bts < sample_data.size()) 
 											{
 												DASHEventMessageBoxv1 e;
-												bts += e.parse((char *)sample_data.data() + bts, sample_data.size());
+												bts += e.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
 												e.print();
 											}
 										}
