@@ -252,7 +252,7 @@ namespace event_track {
 			return bytes_written;
 		}
 
-		uint32_t parse(const char *ptr, unsigned int data_size)
+		uint32_t parse(const char *ptr, unsigned int data_size, uint64_t pres_time=0)
 		{
 			if (data_size > 8) 
 			{
