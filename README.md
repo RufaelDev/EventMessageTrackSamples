@@ -44,6 +44,9 @@ fragmented (CMAF based) event message track
 
 usage dash_event_fmp4 in.mpd out_event_track.cmfm track_id target_segment_duration (0=entire track)
 
+Note that if the duration is not known from the mpd you need to set it in the Manifest EventStream@endTime,
+as the cmaf event track needs to have a duration. 
+
 ## fmp4_dash_event.cpp
 
 Program for converting an event track (CMAF based) back to XML format based on EventStream
