@@ -668,25 +668,69 @@ namespace fmp4_stream
 		return bytes_written;
 	}
 
-	// todo fix this code to be more generic
+	static bool f_compare_4cc(char* in, std::string in_4cc)
+	{
+		if (in[0] == in_4cc[0] && in[1] == in_4cc[1] && in[2] == in_4cc[2] && in[3] == in_4cc[3])
+			return true;
+		else
+			return false;
+	};
+
+	// updated this function a bit to be a bit more generic
 	uint32_t init_fragment::get_time_scale()
 	{
-		if (moov_box_.box_data_.size() > 30) {
-			char * ptr = (char *)moov_box_.box_data_.data();
-			if (std::string((char *)(ptr + 12)).compare("mvhd") == 0)
+		char *ptr = (char*)moov_box_.box_data_.data();
+		bool trak_found = false;
+		bool mdia_found = false;
+		bool mdhd_found = false;
+		uint32_t timescale = 1;
+
+		uint32_t pos = 8;
+
+		// find trak box 
+		while (!trak_found && pos < moov_box_.box_data_.size())
+		{
+			if (f_compare_4cc(ptr + 4 + pos, "trak"))
+				trak_found = true;
+			else
+				pos += fmp4_read_uint32(ptr + pos);
+		}
+		if (trak_found)
+		{
+			pos += 8;
+			while(!mdia_found && pos < moov_box_.box_data_.size())
 			{
-				unsigned int version = (unsigned int)ptr[16];
-				return version ? fmp4_read_uint32(ptr + 36) : fmp4_read_uint32(ptr + 28);
-			}
-			else {
-				std::cout << "provide mvhd in beginning of file for correct timescale" << std::endl;
-				return 0;
-			}
+				if (f_compare_4cc(ptr + 4 + pos, "mdia"))
+					mdia_found = true;
+				else
+					pos += fmp4_read_uint32(ptr + pos);
+			};
 		}
-		else {
-			std::cout << "provide mvhd in beginning of file for correct timescale" << std::endl;
-			return 0;
+		if (mdia_found)
+		{
+			pos += 8;
+			while (!mdhd_found && pos < moov_box_.box_data_.size())
+			{
+				if (f_compare_4cc(ptr + 4 + pos, "mdhd"))
+					mdhd_found = true;
+				else
+					pos += fmp4_read_uint32(ptr + pos);
+			};
 		}
+		if (mdhd_found)
+		{
+			uint8_t version = (uint8_t)ptr[pos + 8];
+			if (version == 1)
+				timescale = fmp4_read_uint32(ptr + pos + 28);
+			else
+				timescale = fmp4_read_uint32(ptr + pos + 20);
+			
+			return timescale;
+		}
+		else
+		    std::cout << "warning no mdhd box found, required for event message track format" << endl;
+		    return timescale;
+	
 	}
 
 	void media_fragment::parse_moof()
