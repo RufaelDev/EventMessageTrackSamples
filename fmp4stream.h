@@ -24,12 +24,14 @@ http://www.code-shop.com
 
 namespace /* anonymous */ {
 
+	//--------- helpers for parsing and reading big endian mp4
+
 	inline bool is_big_endian()
 	{
 		return  (*(uint16_t *)"\0\xff" < 0x100);
 	}
 
-	//------------------ helpers for processing the bitstream ------------------------
+	
 	uint16_t fmp4_endian_swap16(uint16_t in)
 	{
 		return ((in & 0x00FF) << 8) | ((in & 0xFF00) >> 8);
@@ -93,7 +95,7 @@ namespace /* anonymous */ {
 
 namespace fmp4_stream {
 
-	//----------------- structures for storing an fmp4 stream defined in ISOBMMF fMP4 ----------------------
+	//----------------- structures for storing an fmp4 stream defined in ISOBMMF (simplified) ----------------------
 	struct box
 	{
 		uint32_t size_;
@@ -140,9 +142,10 @@ namespace fmp4_stream {
 
 		std::vector<uint32_t>  matrix_;
 		uint32_t next_track_id_;
-		void parse(char const *ptr);
-
-		mvhd() : creation_time_(0), modification_time_(0), time_scale_(0), duration_(0), rate_(0), volume_(0), next_track_id_(0) {};
+		
+        mvhd() : creation_time_(0), modification_time_(0), time_scale_(0), duration_(0), rate_(0), volume_(0), next_track_id_(0) {};
+		
+		void parse(char const* ptr);
 	};
 
 	struct tkhd : public full_box
@@ -156,18 +159,21 @@ namespace fmp4_stream {
 		uint32_t width_;
 		uint32_t height_;
 
-		uint32_t box_size_; // use the box size we want to skip
+		uint32_t box_size_; 
 		tkhd() : full_box() { *this = {}; };
+
+	    // todo implement parsing of tkhd
 	};
 
+	// --------- boxes in track fragments, in this case parsing is implemented
 	struct mfhd : public full_box
 	{
 		uint32_t seq_nr_;
-		void parse(char const * ptr);
+		
 		mfhd() : full_box(), seq_nr_(0) { box_type_ = std::string("mfhd"); };
 		void print() const; 
 		uint64_t size() const { return full_box::size() + 4; };
-	
+		void parse(char const* ptr);
 	};
 
 
@@ -240,6 +246,7 @@ namespace fmp4_stream {
 			uint32_t sample_flags_;
 			uint32_t sample_composition_time_offset_v0_;
 			int32_t  sample_composition_time_offset_v1_;
+			
 			virtual void print() const
 			{
 				//cout << "trun sample entry: "; 
@@ -249,7 +256,7 @@ namespace fmp4_stream {
 				//cout << "" << sample_composition_time_offset_v0 <<endl;
 				//cout << "" << sample_composition_time_offset_v1 << endl;
 			};
-			sample_entry() :sample_duration_(0), 
+			sample_entry() : sample_duration_(0), 
 				sample_size_(0), sample_flags_(0), 
 				sample_composition_time_offset_v0_(0), 
 				sample_composition_time_offset_v1_(0) {};
@@ -292,16 +299,16 @@ namespace fmp4_stream {
 			first_sample_flags_=0;
 
 			//flags
-			data_offset_present_=false;
-			first_sample_flags_present_=false;
-			sample_duration_present_=false;
-			sample_size_present_=false;
-			sample_flags_present_=false;
-			sample_composition_time_offsets_present_=false;
+			data_offset_present_= false;
+			first_sample_flags_present_ = false;
+			sample_duration_present_ = false;
+			sample_size_present_= false;
+			sample_flags_present_= false;
+			sample_composition_time_offsets_present_ = false;
 		}
 	};
 
-	// other boxes in the moof box
+	// other boxes in the moof box not yet implemented (todo)
 	struct senc 
 	{};
 
@@ -447,7 +454,7 @@ namespace fmp4_stream {
 		tfdt tfdt_;
 		trun trun_;
 
-		// see what is in the fragment and store the sub boxes
+		// some functions for parsing and updating movie fragments
 		void parse_moof();
 		void patch_tfdt(uint64_t patch, uint32_t seq_nr = 0);
 		void print() const;
@@ -467,7 +474,7 @@ namespace fmp4_stream {
 		uint64_t get_init_segment_data(std::vector<uint8_t> &init_seg_dat);
 		uint64_t get_media_segment_data(std::size_t index, std::vector<uint8_t> &media_seg_dat);
 
-		void write_to_dash_event_stream(std::string &out_file);
+		
 		void print() const;
 
 		void patch_tfdt(uint64_t patch, bool apply_timescale=true);
@@ -478,7 +485,6 @@ namespace fmp4_stream {
 
 	void gen_splice_insert(std::vector<uint8_t> &out_splice_insert, uint32_t event_id, uint32_t duration);
 	bool set_track_id(std::vector<uint8_t> &moov_in, uint32_t track_id);
-	void set_scheme_id_uri(std::vector<uint8_t> &moov_in, const std::string& urn);
 
 }
 #endif

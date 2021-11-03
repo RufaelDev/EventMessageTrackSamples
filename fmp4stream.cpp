@@ -18,6 +18,14 @@ http://www.code-shop.com
 #include "fmp4stream.h"
 #include "base64.h"
 
+
+/*------------------------ -
+
+warning fmp4 functionality is only partially implemented 
+for better results use exising libraries/parsers
+
+------------------*/
+
 namespace fmp4_stream
 {
 
@@ -46,6 +54,7 @@ namespace fmp4_stream
 		std::cout << std::setw(33) << std::left << " box size: " << size_ << std::endl;
 	}
 
+	// only partially implemented to parse timescale
 	void mvhd::parse(char const *ptr)
 	{
 		this->version_ = (unsigned int)ptr[8];
@@ -432,7 +441,6 @@ namespace fmp4_stream
 			std::bitset<8> bb(*ptr);
 			splice_event_cancel_indicator_ = bb[7];
 		}
-		// we don't support the cancel indicator yet (it should be added)
 	}
 
 	const std::string base64splice_insert("/DAhAAAAAAAAAP/wEAUAAAMrf+9//gAaF7DAAAAAAADkYSQC");
@@ -664,6 +672,7 @@ namespace fmp4_stream
 		}
 		if (message_data_.size())
 			ostr.write((char *)&message_data_[0], message_data_.size());
+		
 		bytes_written += (uint32_t)message_data_.size();
 		return bytes_written;
 	}
@@ -680,6 +689,7 @@ namespace fmp4_stream
 	uint32_t init_fragment::get_time_scale()
 	{
 		char *ptr = (char*)moov_box_.box_data_.data();
+
 		bool trak_found = false;
 		bool mdia_found = false;
 		bool mdhd_found = false;
@@ -755,7 +765,7 @@ namespace fmp4_stream
 				box_size = fmp4_read_uint64((char *)& ptr[offset + temp_off]);
 			}
 
-			if (std::string(name).compare("mfhd") == 0)
+			if (f_compare_4cc(name,"mfhd"))
 			{
 				mfhd_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
@@ -763,21 +773,21 @@ namespace fmp4_stream
 				continue;
 			}
 
-			if (std::string(name).compare("trun") == 0)
+			if (f_compare_4cc(name,"trun"))
 			{
 				trun_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
 				continue;
 			}
 
-			if (std::string(name).compare("tfdt") == 0)
+			if (f_compare_4cc(name,"tfdt"))
 			{
 				tfdt_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
 				continue;
 			}
 
-			if (std::string(name).compare("tfhd") == 0)
+			if (f_compare_4cc(name,"tfhd"))
 			{
 				tfhd_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
@@ -785,7 +795,7 @@ namespace fmp4_stream
 			}
 
 			// cmaf style only one traf box per moof so we skip it
-			if (std::string(name).compare("traf") == 0)
+			if (f_compare_4cc(name, "traf"))
 			{
 				offset += 8;
 			}
@@ -805,7 +815,8 @@ namespace fmp4_stream
 		if (seq_nr)
 			this->mfhd_.seq_nr_ = seq_nr;
 
-		this->tfdt_.base_media_decode_time_ = this->tfdt_.base_media_decode_time_ + patch;
+		this->tfdt_.base_media_decode_time_ = \
+			this->tfdt_.base_media_decode_time_ + patch;
 
 		// find the tfdt box and overwrite it
 		while (moof_box_.box_data_.size() > offset)
@@ -821,7 +832,7 @@ namespace fmp4_stream
 				box_size = fmp4_read_uint64((char *)& ptr[offset + temp_off]);
 			}
 
-			if (std::string(name).compare("mfhd") == 0)
+			if (f_compare_4cc(name, "mfhd"))
 			{
 				
 				if (seq_nr) 
@@ -832,14 +843,14 @@ namespace fmp4_stream
 				continue;
 			}
 
-			if (std::string(name).compare("trun") == 0)
+			if (f_compare_4cc(name, "trun"))
 			{
 				//trun_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
 				continue;
 			}
 
-			if (std::string(name).compare("tfdt") == 0)
+			if (f_compare_4cc(name, "tfdt"))
 			{
 				
 				this->tfdt_.version_ ? \
@@ -850,7 +861,7 @@ namespace fmp4_stream
 				continue;
 			}
 
-			if (std::string(name).compare("tfhd") == 0)
+			if (f_compare_4cc(name, "tfhd"))
 			{
 				//tfhd_.parse((char *)& ptr[offset + temp_off]);
 				offset += (uint64_t)box_size;
@@ -858,7 +869,7 @@ namespace fmp4_stream
 			}
 
 			// cmaf style only one traf box per moof so we skip it
-			if (std::string(name).compare("traf") == 0)
+			if (f_compare_4cc(name, "traf"))
 			{
 				offset += 8;
 			}
@@ -874,14 +885,21 @@ namespace fmp4_stream
 		init_seg_dat.resize(ssize);
 
 		// hard copy the init segment data to the output vector, as ftyp and moviefragment box need to be combined
-		std::copy(init_fragment_.ftyp_box_.box_data_.begin(), init_fragment_.ftyp_box_.box_data_.end(), init_seg_dat.begin());
-		std::copy(init_fragment_.moov_box_.box_data_.begin(), init_fragment_.moov_box_.box_data_.end(), init_seg_dat.begin() + init_fragment_.ftyp_box_.large_size_);
+		std::copy(init_fragment_.ftyp_box_.box_data_.begin(), 
+			      init_fragment_.ftyp_box_.box_data_.end(), 
+			      init_seg_dat.begin()
+	    );
+		std::copy(init_fragment_.moov_box_.box_data_.begin(), 
+			      init_fragment_.moov_box_.box_data_.end(), 
+			      init_seg_dat.begin() + init_fragment_.ftyp_box_.large_size_
+		);
 
 		return ssize;
 	};
 
 	// function to support the ingest of segments 
-	uint64_t ingest_stream::get_media_segment_data(std::size_t index, std::vector<uint8_t> &media_seg_dat)
+	uint64_t ingest_stream::get_media_segment_data(
+		std::size_t index, std::vector<uint8_t> &media_seg_dat)
 	{
 		if (!(media_fragment_.size() > index))
 			return 0;
@@ -889,8 +907,16 @@ namespace fmp4_stream
 		uint64_t ssize = media_fragment_[index].moof_box_.large_size_ + media_fragment_[index].mdat_box_.large_size_;
 		media_seg_dat.resize(ssize);
 
-		std::copy(media_fragment_[index].moof_box_.box_data_.begin(), media_fragment_[index].moof_box_.box_data_.end(), media_seg_dat.begin());
-		std::copy(media_fragment_[index].mdat_box_.box_data_.begin(), media_fragment_[index].mdat_box_.box_data_.end(), media_seg_dat.begin() + media_fragment_[index].moof_box_.large_size_);
+		// copy moviefragmentbox
+		std::copy(media_fragment_[index].moof_box_.box_data_.begin(), 
+			      media_fragment_[index].moof_box_.box_data_.end(), 
+			      media_seg_dat.begin()
+	    );
+		// copy mdat
+		std::copy(media_fragment_[index].mdat_box_.box_data_.begin(), 
+			      media_fragment_[index].mdat_box_.box_data_.end(), 
+			      media_seg_dat.begin() + media_fragment_[index].moof_box_.large_size_
+	    );
 
 		return ssize;
 	};
@@ -938,20 +964,16 @@ namespace fmp4_stream
 				// organize the boxes in init fragments and media fragments 
 				for (auto it = ingest_boxes.begin(); it != ingest_boxes.end(); ++it)
 				{
-					if (it->box_type_.compare("ftyp") == 0)
-					{
-						//cout << "|ftyp|";
+					if (f_compare_4cc( (char *)it->box_type_.c_str(), "ftyp"))
 						init_fragment_.ftyp_box_ = *it;
-					}
-					if (it->box_type_.compare("moov") == 0)
+					if (f_compare_4cc((char*)it->box_type_.c_str(), "moov"))
 					{
-						//cout << "|moov|";
 						init_fragment_.moov_box_ = *it;
 						if (init_only)
 							return 0;
 					}
 
-					if (it->box_type_.compare("moof") == 0) // in case of moof box we push both the moof and following mdat
+					if (f_compare_4cc((char*)it->box_type_.c_str(), "moof")) // in case of moof box we push both the moof and following mdat
 					{
 						media_fragment m = {};
 						m.moof_box_ = *it;
@@ -964,14 +986,14 @@ namespace fmp4_stream
 							e.parse((char *)& prev_box->box_data_[0], (unsigned int)prev_box->box_data_.size());
 							m.emsg_.push_back(e);
 							//cout << "|emsg|";
-							std::cout << "found inband dash emsg box" << std::endl;
+							//std::cout << "found inband dash emsg box" << std::endl;
 						}
 						//cout << "|moof|";
 						while (!mdat_found)
 						{
 							it++;
 
-							if (it->box_type_.compare("mdat") == 0)
+							if (f_compare_4cc((char*)it->box_type_.c_str(), "mdat"))
 							{
 								// find event messages embedded in 
 
@@ -995,7 +1017,7 @@ namespace fmp4_stream
 
 									std::string enc_box_name((char *)&name[4]);
 
-									if (enc_box_name.compare("emsg") == 0) // right now we can only parse a single emsg, todo update to parse multiple emsg
+									if (f_compare_4cc((char*)enc_box_name.c_str(), "emsg") ) // right now we can only parse a single emsg, todo update to parse multiple emsg
 									{
 										emsg e = {};
 										e.parse((char *)&m.mdat_box_.box_data_[index], (unsigned int)l_size);
@@ -1004,7 +1026,7 @@ namespace fmp4_stream
 										index += l_size;
 										continue;
 									}
-									if (enc_box_name.compare("embe") == 0)
+									if (f_compare_4cc((char*)enc_box_name.c_str(), "embe"))
 									{
 										index += l_size;
 										continue;
@@ -1049,7 +1071,10 @@ namespace fmp4_stream
 	}
 
 	// archival function, write init segment to a file
-	int ingest_stream::write_init_to_file(std::string &ofile, unsigned int nfrags, bool write_sep_files)
+	int ingest_stream::write_init_to_file(
+		std::string &ofile, 
+		unsigned int nfrags, 
+		bool write_sep_files)
 	{
 		// write the stream to an output file
 		if (!write_sep_files) {
@@ -1099,7 +1124,7 @@ namespace fmp4_stream
 		return 0;
 	}
 
-	// carefull only use with the testes=d pre-encoded moov boxes to write streams
+	// warning only use with the testes=d pre-encoded moov boxes to write streams
 	bool set_track_id(std::vector<uint8_t> &moov_in, uint32_t track_id)
 	{
 		bool set_tkhd = false;
@@ -1139,11 +1164,6 @@ namespace fmp4_stream
 		}
 		return true;
 	}
-
-
-
-	
-
 
 	void ingest_stream::print() const
 	{

@@ -86,7 +86,7 @@ uint32_t event_track::find_event_samples(
 				pt_du += 1;
 
 			// event is active during sample duration 
-			if (pt < sample_boundaries[i + 1] && pt_du > sample_boundaries[i])
+			if (pt < sample_boundaries[i+1] && pt_du > sample_boundaries[i])
 			{
 				s.instance_boxes_.push_back(event_track::EventMessageInstanceBox(emsgs_in[k], s.sample_presentation_time_));
 				s.is_emeb_ = false;
@@ -441,7 +441,7 @@ void event_track::set_evte(std::vector<uint8_t>& moov_in)
 			// last part of the string
 			l_last = std::vector<uint8_t>(moov_in.begin() + k + or_size - 4, moov_in.end());
 
-			uint32_t l_diff = moov_in.size() - l_first.size() - l_last.size() - size_diff;
+			size_t l_diff = moov_in.size() - l_first.size() - l_last.size() - size_diff;
 
 			break;
 		}
@@ -711,7 +711,7 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 										if (compare_4cc((char *) &sample_data[4], "emib")) {
 											while (bts < sample_data.size()) {
 												EventMessageInstanceBox im_box;
-												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
+												bts += im_box.parse((char *)sample_data.data() + bts, (unsigned int)sample_data.size(),pres_time);
 												auto e = im_box.to_emsg_v1(pres_time);
 												events_list_[im_box.scheme_id_uri_][im_box.id_] = e;
 											}
@@ -721,7 +721,7 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 											while (bts < sample_data.size()) 
 											{
 												DASHEventMessageBoxv1 e;
-												bts += e.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
+												bts += e.parse((char *)sample_data.data() + bts, (unsigned int)sample_data.size(),pres_time);
 												events_list_[e.scheme_id_uri_][e.id_] = e;
 											}
 										}
@@ -842,7 +842,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 										if (compare_4cc((char *) &sample_data[4], "emib")) {
 											while (bts < sample_data.size()) {
 												EventMessageInstanceBox im_box;
-												bts += im_box.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
+												bts += im_box.parse((char *)sample_data.data() + bts, (unsigned int)sample_data.size(),pres_time);
 												im_box.print();
 											}
 										}
@@ -851,7 +851,7 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 											while (bts < sample_data.size()) 
 											{
 												DASHEventMessageBoxv1 e;
-												bts += e.parse((char *)sample_data.data() + bts, sample_data.size(),pres_time);
+												bts += e.parse((char *)sample_data.data() + bts, (unsigned int) sample_data.size(),pres_time);
 												e.print();
 											}
 										}
