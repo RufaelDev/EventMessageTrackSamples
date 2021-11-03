@@ -1174,13 +1174,13 @@ namespace fmp4_stream
 	}
 
 	// method to patch all timestamps from a VoD (0) base to live (epoch based)
-	void ingest_stream::patch_tfdt(uint64_t time_anchor, bool applytimescale)
+	void ingest_stream::patch_tfdt(uint64_t time_anchor, bool applytimescale, uint32_t anchor_scale)
 	{
 		if (applytimescale) {
 			uint32_t timescale = 0;
 			timescale = this->init_fragment_.get_time_scale();
 			if(timescale)
-			   time_anchor = time_anchor * timescale; // offset to add to the timestamps
+			   time_anchor = time_anchor * timescale / anchor_scale; // offset to add to the timestamps
 		}
 
 		uint32_t seq_nr = 0;

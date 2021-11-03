@@ -477,7 +477,7 @@ namespace fmp4_stream {
 		
 		void print() const;
 
-		void patch_tfdt(uint64_t patch, bool apply_timescale=true);
+		void patch_tfdt(uint64_t patch, bool apply_timescale=true, uint32_t anchor_scale=1);
 
 		uint64_t get_duration();
 		uint64_t get_start_time();
