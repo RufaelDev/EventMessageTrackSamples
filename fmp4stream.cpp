@@ -728,7 +728,7 @@ namespace fmp4_stream
 			return timescale;
 		}
 		else
-		    std::cout << "warning no mdhd box found, required for event message track format" << endl;
+		    std::cout << "warning no mdhd box found, required for event message track format" << std::endl;
 		    return timescale;
 	
 	}
