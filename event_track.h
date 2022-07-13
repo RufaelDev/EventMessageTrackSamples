@@ -37,7 +37,10 @@ namespace event_track {
 		std::string 	scheme_id_uri_;
 		std::string		value_;
 		std::vector<uint8_t>    message_data_;
-
+		DASHEventMessageBoxv1()
+			: timescale_(1000), presentation_time_(0), event_duration_(0), id_(0), scheme_id_uri_(""),value_(""), message_data_()
+		{
+		};
 		uint32_t parse(const char *ptr, unsigned int data_size, uint64_t presentation_time = 0)
 		{
 			
@@ -113,6 +116,8 @@ namespace event_track {
 			std::cout << " message data b64: " << base64_encode(message_data_.data(), message_data_.size()) << std::endl;
 		}
 	};
+
+	void write_event_track_cmaf_header(uint32_t track_id, uint32_t timescale, std::ostream& out_file);
 
 	//! struct to store a EventMessageInstanceBox 
 	struct EventMessageInstanceBox : fmp4_stream::full_box

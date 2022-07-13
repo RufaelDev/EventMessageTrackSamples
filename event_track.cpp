@@ -504,10 +504,34 @@ void event_track::set_evte(std::vector<uint8_t>& moov_in)
 				or_size = (uint32_t)(or_size - size_diff);
 				fmp4_write_uint32(or_size, (char *)&moov_in[i - 4]);
 			}
+
 		}
 	}
 };
 
+void event_track::write_event_track_cmaf_header(uint32_t track_id, uint32_t timescale, std::ostream &ot)
+{
+	std::vector<uint8_t> sparse_moov = base64_decode(moov_64_enc);
+	set_track_id(sparse_moov, track_id);
+
+	// write back the timescale mvhd / mhd
+	fmp4_write_uint32(timescale, (char*)&sparse_moov[28]);
+	fmp4_write_uint32(timescale, (char*)&sparse_moov[244]);
+	fmp4_write_uint32(track_id, (char*)&sparse_moov[544]);
+	event_track::set_evte(sparse_moov);
+
+	
+	//cout << sparse_moov.size() << endl;
+
+	if (ot.good())
+	{
+		// write the ftyp header
+		ot.write((char*)&sparse_ftyp[0], 20);
+		ot.write((const char*)&sparse_moov[0], sparse_moov.size());
+	}
+	
+	return;
+}
 // writes sparse emsg file, set the track, the scheme
 int event_track::write_to_segmented_event_track_file(
 	const std::string& out_file,
@@ -549,8 +573,18 @@ int event_track::write_to_segmented_event_track_file(
 				actual_duration = pt_off_end - it_time;
 
 			std::vector<event_track::EventSample> samples_in_segment;
-			find_event_samples(in_emsg_list, samples_in_segment, it_time, it_time + actual_duration);
-			event_track::write_evt_samples_as_fmp4_fragment(samples_in_segment, ot, it_time,track_id , it_time + actual_duration);
+			find_event_samples(
+			in_emsg_list, 
+			samples_in_segment, 
+			it_time, 
+			it_time + actual_duration
+			);
+			event_track::write_evt_samples_as_fmp4_fragment(
+			samples_in_segment, 
+			ot, 
+			it_time,
+			track_id , 
+			it_time + actual_duration);
 			it_time +=actual_duration;
 		}
 		if(ot.good())
@@ -611,7 +645,10 @@ void event_track::ingest_event_stream::write_to_dash_event_stream(std::string &o
 	    ot.close();
 	}
 
-event_track::DASHEventMessageBoxv1 event_track::generate_random_event(bool set_duration_to_zero, uint32_t max_p , uint32_t max_d )
+event_track::DASHEventMessageBoxv1 event_track::generate_random_event(
+	bool set_duration_to_zero, 
+	uint32_t max_p , 
+	uint32_t max_d )
 {
 	std::default_random_engine generator;
 	std::random_device dev;
@@ -767,7 +804,10 @@ int event_track::ingest_event_stream::load_from_file(std::istream &infile, bool 
 }
 
 // parse an fmp4 file for media ingest
-int event_track::ingest_event_stream::print_samples_from_file(std::istream &infile, bool init_only)
+int event_track::ingest_event_stream::print_samples_from_file(
+	std::istream &infile, 
+	bool init_only
+)
 {
 	try
 	{
@@ -901,7 +941,12 @@ int event_track::ingest_event_stream::print_samples_from_file(std::istream &infi
 }
 
 
-int event_track::gen_avail_files(uint32_t track_duration, uint32_t seg_duration_ticks_ms, uint32_t avail_duration, uint32_t avail_interval, uint64_t start_time)
+int event_track::gen_avail_files(
+	    uint32_t track_duration ,
+		uint32_t seg_duration_ticks_ms ,
+		uint32_t avail_duration ,
+		uint32_t avail_interval ,
+		uint64_t start_time )
 {
 	std::vector<event_track::DASHEventMessageBoxv1> events;
 
